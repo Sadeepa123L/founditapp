@@ -6,12 +6,12 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyAD3ORzjBoCYlRdPe7qmrv_XDPiEsIxm8k",
+  authDomain: "founditapp-e8f29.firebaseapp.com",
+  projectId: "founditapp-e8f29",
+  storageBucket: "founditapp-e8f29.firebasestorage.app",
+  messagingSenderId: "411093873495",
+  appId: "1:411093873495:web:52774417b9362d1ab60412",
 };
 
 const app = initializeApp(firebaseConfig);
