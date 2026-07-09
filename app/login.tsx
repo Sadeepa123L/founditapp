@@ -1,13 +1,14 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../src/context/AuthContext";
 
@@ -38,6 +39,13 @@ export default function LoginScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
+      <TouchableOpacity
+        onPress={() => router.back()}
+        style={{ marginBottom: 20 }}
+      >
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity>
+
       <Text style={styles.title}>Welcome to FoundIt</Text>
       <Text style={styles.subtitle}>Log in to continue</Text>
 
@@ -46,6 +54,8 @@ export default function LoginScreen() {
         placeholder="Email"
         autoCapitalize="none"
         keyboardType="email-address"
+        autoComplete="off"
+        textContentType="none"
         value={email}
         onChangeText={setEmail}
       />
@@ -53,6 +63,8 @@ export default function LoginScreen() {
         style={styles.input}
         placeholder="Password"
         secureTextEntry
+        autoComplete="off"
+        textContentType="password"
         value={password}
         onChangeText={setPassword}
       />
