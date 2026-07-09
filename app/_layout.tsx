@@ -11,13 +11,12 @@ function RootLayoutNav() {
   useEffect(() => {
     if (loading) return;
 
-    const inAuthGroup = segments[0] === "login" || segments[0] === "signup";
+    const authScreens = ["welcome", "login", "signup"];
+    const inAuthGroup = authScreens.includes(segments[0] as string);
 
     if (!user && !inAuthGroup) {
-      // Not logged in, and not already on login/signup -> redirect to login
-      router.replace("/login");
+      router.replace("/welcome");
     } else if (user && inAuthGroup) {
-      // Logged in, but sitting on login/signup -> redirect to home
       router.replace("/");
     }
   }, [user, loading, segments]);
