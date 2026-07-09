@@ -1,13 +1,14 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Link, router } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../src/context/AuthContext";
 
@@ -47,14 +48,22 @@ export default function SignupScreen() {
       style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Join FoundIt to get started</Text>
+      <TouchableOpacity
+        onPress={() => router.back()}
+        style={{ marginBottom: 20 }}
+      >
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity>
 
+      <Text style={styles.title}>Welcome to FoundIt</Text>
+      <Text style={styles.subtitle}>Log in to continue</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
         autoCapitalize="none"
         keyboardType="email-address"
+        autoComplete="off"
+        textContentType="none"
         value={email}
         onChangeText={setEmail}
       />
@@ -62,6 +71,8 @@ export default function SignupScreen() {
         style={styles.input}
         placeholder="Password"
         secureTextEntry
+        autoComplete="off"
+        textContentType="password"
         value={password}
         onChangeText={setPassword}
       />
@@ -69,6 +80,8 @@ export default function SignupScreen() {
         style={styles.input}
         placeholder="Confirm Password"
         secureTextEntry
+        autoComplete="off"
+        textContentType="password"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
       />
