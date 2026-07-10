@@ -7,6 +7,7 @@ import {
   orderBy,
   query,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { Post } from "../types/Post";
@@ -30,6 +31,29 @@ export function subscribeToPosts(
   onError: (error: Error) => void,
 ) {
   const q = query(postsCollection, orderBy("createdAt", "desc"));
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const posts: Post[] = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...(docSnap.data() as Omit<Post, "id">),
+      }));
+      onUpdate(posts);
+    },
+    onError,
+  );
+}
+
+export function subscribeToMyPosts(
+  uid: string,
+  onUpdate: (posts: Post[]) => void,
+  onError: (error: Error) => void,
+) {
+  const q = query(
+    postsCollection,
+    where("postedBy", "==", uid),
+    orderBy("createdAt", "desc"),
+  );
   return onSnapshot(
     q,
     (snapshot) => {
