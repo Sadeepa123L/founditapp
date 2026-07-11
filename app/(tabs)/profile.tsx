@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
@@ -18,6 +19,13 @@ export default function ProfileScreen() {
         </View>
         <Text style={styles.email}>{user?.email}</Text>
         <Text style={styles.uid}>UID: {user?.uid}</Text>
+
+        <TouchableOpacity 
+          style={styles.inboxBtn} 
+          onPress={() => router.push("/claims-inbox")}
+        >
+          <Text style={styles.inboxText}>View Claims Inbox</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
           <Text style={styles.logoutText}>Log Out</Text>
@@ -48,16 +56,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  avatarText: { color: "#fff", fontSize: 36, fontWeight: "bold" },
+  avatarText: { fontSize: 36, color: "#fff", fontWeight: "bold" },
   email: { fontSize: 18, fontWeight: "600", color: "#111", marginBottom: 4 },
-  uid: { fontSize: 12, color: "#666", marginBottom: 30 },
-  logoutBtn: {
-    backgroundColor: "#fee2e2",
-    paddingVertical: 14,
+  uid: { fontSize: 12, color: "#9ca3af", marginBottom: 32 },
+  inboxBtn: {
+    backgroundColor: "#10b981",
+    paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#fca5a5",
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 16,
   },
-  logoutText: { color: "#dc2626", fontWeight: "700", fontSize: 16 },
+  inboxText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  logoutBtn: {
+    backgroundColor: "#ef4444",
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 8,
+    width: "100%",
+    alignItems: "center",
+  },
+  logoutText: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });

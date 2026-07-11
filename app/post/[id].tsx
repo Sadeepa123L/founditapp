@@ -5,13 +5,16 @@ import {
     ActivityIndicator,
     Alert,
     Image,
+    Modal,
     ScrollView,
     StyleSheet,
     Text,
+    TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
+import { createClaim } from "../../src/services/claimService";
 import { db } from "../../src/services/firebase";
 import { deletePost, updatePost } from "../../src/services/postService";
 import { Post } from "../../src/types/Post";
@@ -21,6 +24,8 @@ export default function PostDetailScreen() {
   const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
+  const [claimModalVisible, setClaimModalVisible] = useState(false);
+  const [claimMessage, setClaimMessage] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -52,6 +57,25 @@ export default function PostDetailScreen() {
   }
 
   const isOwner = user?.uid === post.postedBy;
+
+  const handleClaim = async () => {
+    if (!user) return;
+    try {
+      await createClaim({
+        postId: post.id,
+        postTitle: post.title,
+        postOwnerId: post.postedBy,
+        claimerId: user.uid,
+        claimerEmail: user.email || "",
+        message: claimMessage,
+      });
+      setClaimModalVisible(false);
+      setClaimMessage("");
+      Alert.alert("Success", "Claim request sent!");
+    } catch (e) {
+      Alert.alert("Error", "Failed to send claim request.");
+    }
+  };
 
   const handleMarkResolved = async () => {
     await updatePost(post.id, { status: "resolved" });
@@ -104,7 +128,7 @@ export default function PostDetailScreen() {
         <Text style={styles.description}>{post.description}</Text>
         <Text style={styles.postedBy}>Posted by {post.postedByEmail}</Text>
 
-        {isOwner && (
+        {isOwner ? (
           <View style={styles.ownerActions}>
             {post.status !== "resolved" && (
               <TouchableOpacity
@@ -118,8 +142,56 @@ export default function PostDetailScreen() {
               <Text style={styles.deleteBtnText}>Delete Post</Text>
             </TouchableOpacity>
           </View>
+        ) : (
+          <View style={styles.nonOwnerActions}>
+            {post.status !== "claimed" && post.status !== "resolved" && (
+              <TouchableOpacity
+                style={styles.claimBtn}
+                onPress={() => setClaimModalVisible(true)}
+              >
+                <Text style={styles.claimBtnText}>Claim This Item</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         )}
       </View>
+
+      <Modal
+        visible={claimModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setClaimModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Request to Claim</Text>
+            <Text style={styles.modalSubtitle}>
+              Send a message to the owner to verify this is yours.
+            </Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="e.g., The keys have a blue keychain..."
+              value={claimMessage}
+              onChangeText={setClaimMessage}
+              multiline
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalCancelBtn]}
+                onPress={() => setClaimModalVisible(false)}
+              >
+                <Text style={styles.modalCancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalBtn, styles.modalSubmitBtn]}
+                onPress={handleClaim}
+              >
+                <Text style={styles.modalSubmitBtnText}>Send Request</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -170,19 +242,62 @@ const styles = StyleSheet.create({
   },
   description: { fontSize: 15, lineHeight: 22, marginBottom: 16 },
   postedBy: { fontSize: 13, color: "#999", marginBottom: 20 },
-  ownerActions: { gap: 10 },
+  ownerActions: { flexDirection: "row", marginTop: 24, gap: 12 },
+  nonOwnerActions: { marginTop: 24 },
   resolveBtn: {
+    flex: 1,
     backgroundColor: "#16a34a",
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
   },
-  resolveBtnText: { color: "#fff", fontWeight: "700" },
+  resolveBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
   deleteBtn: {
-    backgroundColor: "#fee2e2",
+    flex: 1,
+    backgroundColor: "#dc2626",
     padding: 14,
     borderRadius: 8,
     alignItems: "center",
   },
-  deleteBtnText: { color: "#dc2626", fontWeight: "700" },
+  deleteBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  claimBtn: {
+    backgroundColor: "#2563eb",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  claimBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    padding: 16,
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 24,
+  },
+  modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 8 },
+  modalSubtitle: { fontSize: 14, color: "#666", marginBottom: 16 },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 12,
+    minHeight: 100,
+    textAlignVertical: "top",
+    marginBottom: 24,
+  },
+  modalButtons: { flexDirection: "row", gap: 12 },
+  modalBtn: {
+    flex: 1,
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  modalCancelBtn: { backgroundColor: "#f3f4f6" },
+  modalCancelBtnText: { color: "#374151", fontWeight: "600" },
+  modalSubmitBtn: { backgroundColor: "#2563eb" },
+  modalSubmitBtnText: { color: "#fff", fontWeight: "600" },
 });
