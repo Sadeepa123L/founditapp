@@ -138,6 +138,12 @@ export default function PostDetailScreen() {
                 <Text style={styles.resolveBtnText}>Mark as Resolved</Text>
               </TouchableOpacity>
             )}
+            <TouchableOpacity 
+              style={styles.editBtn} 
+              onPress={() => router.push(`/post/edit/${post.id}`)}
+            >
+              <Text style={styles.editBtnText}>Edit</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
               <Text style={styles.deleteBtnText}>Delete Post</Text>
             </TouchableOpacity>
@@ -252,6 +258,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   resolveBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  editBtn: {
+    flex: 1,
+    backgroundColor: "#2563eb",
+    padding: 14,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  editBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
   deleteBtn: {
     flex: 1,
     backgroundColor: "#dc2626",
