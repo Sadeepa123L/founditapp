@@ -54,12 +54,12 @@ Status: ✅ COMPLETED
 
 ## PHASE 5 — POST EDITING
 
-Status: ⬜ NOT STARTED
+Status: ✅ COMPLETED
 
-- [ ] Add "Edit" button on app/post/[id].tsx (visible to owner only).
-- [ ] Support full content edits by reusing app/create-post.tsx in edit-mode (or build app/post/edit/[id].tsx).
-- [ ] Keep existing photoUrl if user doesn't change it; re-upload only if a new photo is selected.
-- [ ] Deliverable: Owner can fully edit post fields, and changes reflect instantly across the app.
+- [x] Add "Edit" button on app/post/[id].tsx (visible to owner only).
+- [x] Support full content edits by reusing app/create-post.tsx in edit-mode (or build app/post/edit/[id].tsx).
+- [x] Keep existing photoUrl if user doesn't change it; re-upload only if a new photo is selected.
+- [x] Deliverable: Owner can fully edit post fields, and changes reflect instantly across the app.
 
 ## PHASE 6 — MY POSTS SCREEN
 
