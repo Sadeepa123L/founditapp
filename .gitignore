@@ -42,3 +42,7 @@ app-example
 /ios
 /android
 
+# Custom agent instructions
+AGENTS.md
+Architecture.md
+RULES.md
