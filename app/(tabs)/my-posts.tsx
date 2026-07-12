@@ -80,16 +80,13 @@ export default function MyPostsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f9fafb" },
+  container: { flex: 1, backgroundColor: "#0F172A" },
   center: { flex: 1, justifyContent: "center", alignItems: "center", minHeight: 200 },
   header: {
-    padding: 16,
-    paddingTop: 50,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    alignItems: "center",
+    padding: 24,
+    paddingTop: 60,
+    backgroundColor: "#0F172A",
   },
-  headerTitle: { fontSize: 20, fontWeight: "bold" },
-  emptyText: { color: "#999", fontSize: 15, marginTop: 40, textAlign: "center" },
+  headerTitle: { fontSize: 34, fontWeight: "900", color: "#F8FAFC", letterSpacing: -1 },
+  emptyText: { color: "#94A3B8", fontSize: 16, marginTop: 40, textAlign: "center", fontWeight: "500" },
 });
