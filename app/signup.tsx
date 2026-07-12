@@ -56,7 +56,7 @@ export default function SignupScreen() {
       </TouchableOpacity>
 
       <Text style={styles.title}>Welcome to FoundIt</Text>
-      <Text style={styles.subtitle}>Log in to continue</Text>
+      <Text style={styles.subtitle}>Create an account to continue</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -107,26 +107,31 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#fff",
+    padding: 32,
+    backgroundColor: "#0F172A",
   },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 4 },
-  subtitle: { fontSize: 16, color: "#666", marginBottom: 24 },
+  title: { fontSize: 32, fontWeight: "900", marginBottom: 8, color: "#F8FAFC", letterSpacing: -1 },
+  subtitle: { fontSize: 16, color: "#94A3B8", marginBottom: 32, fontWeight: "500" },
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 14,
-    marginBottom: 12,
+    backgroundColor: "#1E293B",
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 16,
     fontSize: 16,
+    color: "#F8FAFC",
   },
   button: {
-    backgroundColor: "#2563eb",
-    borderRadius: 8,
-    padding: 16,
+    backgroundColor: "#6366F1",
+    borderRadius: 999,
+    padding: 18,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: 16,
+    shadowColor: "#6366F1",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  link: { marginTop: 20, textAlign: "center", color: "#2563eb" },
+  buttonText: { color: "#FFFFFF", fontSize: 16, fontWeight: "700" },
+  link: { marginTop: 24, textAlign: "center", color: "#6366F1", fontWeight: "600" },
 });
