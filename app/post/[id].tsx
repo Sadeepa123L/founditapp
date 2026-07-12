@@ -2,19 +2,17 @@ import { router, useLocalSearchParams } from "expo-router";
 import { doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
-import { createClaim } from "../../src/services/claimService";
+import { createOrGetRoom } from "../../src/services/chatService";
 import { db } from "../../src/services/firebase";
 import { deletePost, updatePost } from "../../src/services/postService";
 import { Post } from "../../src/types/Post";
@@ -24,8 +22,6 @@ export default function PostDetailScreen() {
   const { user } = useAuth();
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
-  const [claimModalVisible, setClaimModalVisible] = useState(false);
-  const [claimMessage, setClaimMessage] = useState("");
 
   useEffect(() => {
     if (!id) return;
@@ -43,7 +39,7 @@ export default function PostDetailScreen() {
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color="#6366F1" />
       </View>
     );
   }
@@ -51,29 +47,29 @@ export default function PostDetailScreen() {
   if (!post) {
     return (
       <View style={styles.center}>
-        <Text>Post not found.</Text>
+        <Text style={{ color: "#F8FAFC" }}>Post not found.</Text>
       </View>
     );
   }
 
   const isOwner = user?.uid === post.postedBy;
 
-  const handleClaim = async () => {
+  const handleMessageOwner = async () => {
     if (!user) return;
     try {
-      await createClaim({
-        postId: post.id,
-        postTitle: post.title,
-        postOwnerId: post.postedBy,
-        claimerId: user.uid,
-        claimerEmail: user.email || "",
-        message: claimMessage,
-      });
-      setClaimModalVisible(false);
-      setClaimMessage("");
-      Alert.alert("Success", "Claim request sent!");
+      const roomId = await createOrGetRoom(
+        post.id,
+        post.title,
+        post.photoUrl || null,
+        post.postedBy,
+        post.postedByEmail,
+        user.uid,
+        user.email || "Unknown"
+      );
+      router.push(`/chat/${roomId}`);
     } catch (e) {
-      Alert.alert("Error", "Failed to send claim request.");
+      console.error(e);
+      Alert.alert("Error", "Failed to start chat.");
     }
   };
 
@@ -105,7 +101,7 @@ export default function PostDetailScreen() {
         <Image source={{ uri: post.photoUrl }} style={styles.photo} />
       ) : (
         <View style={[styles.photo, styles.photoPlaceholder]}>
-          <Text style={{ color: "#999" }}>No photo</Text>
+          <Text style={{ color: "#64748B" }}>No photo</Text>
         </View>
       )}
 
@@ -145,15 +141,15 @@ export default function PostDetailScreen() {
               <Text style={styles.editBtnText}>Edit</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
-              <Text style={styles.deleteBtnText}>Delete Post</Text>
+              <Text style={styles.deleteBtnText}>Delete</Text>
             </TouchableOpacity>
           </View>
         ) : (
           <View style={styles.nonOwnerActions}>
-            {post.status !== "claimed" && post.status !== "resolved" && (
+            {post.status !== "resolved" && (
               <TouchableOpacity
                 style={styles.claimBtn}
-                onPress={() => setClaimModalVisible(true)}
+                onPress={handleMessageOwner}
               >
                 <Text style={styles.claimBtnText}>Claim This Item</Text>
               </TouchableOpacity>
@@ -161,157 +157,95 @@ export default function PostDetailScreen() {
           </View>
         )}
       </View>
-
-      <Modal
-        visible={claimModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setClaimModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Request to Claim</Text>
-            <Text style={styles.modalSubtitle}>
-              Send a message to the owner to verify this is yours.
-            </Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="e.g., The keys have a blue keychain..."
-              value={claimMessage}
-              onChangeText={setClaimMessage}
-              multiline
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalCancelBtn]}
-                onPress={() => setClaimModalVisible(false)}
-              >
-                <Text style={styles.modalCancelBtnText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalBtn, styles.modalSubmitBtn]}
-                onPress={handleClaim}
-              >
-                <Text style={styles.modalSubmitBtnText}>Send Request</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  container: { flex: 1, backgroundColor: "#0F172A" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#0F172A" },
   backBtn: {
     position: "absolute",
     top: 50,
     left: 16,
     zIndex: 10,
-    backgroundColor: "#fff",
-    padding: 8,
+    backgroundColor: "rgba(15,23,42,0.7)",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
     borderRadius: 20,
   },
-  backBtnText: { fontSize: 16, fontWeight: "600" },
-  photo: { width: "100%", height: 280 },
+  backBtnText: { fontSize: 16, fontWeight: "600", color: "#F8FAFC" },
+  photo: { width: "100%", height: 320, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
   photoPlaceholder: {
-    backgroundColor: "#f3f4f6",
+    backgroundColor: "#1E293B",
     justifyContent: "center",
     alignItems: "center",
   },
-  content: { padding: 20 },
+  content: { padding: 24 },
   badgeRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 10,
+    marginBottom: 16,
+    alignItems: "center",
   },
   badge: {
     fontSize: 12,
-    fontWeight: "700",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+    fontWeight: "800",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
     overflow: "hidden",
   },
-  badgeLost: { backgroundColor: "#fee2e2", color: "#dc2626" },
-  badgeFound: { backgroundColor: "#dcfce7", color: "#16a34a" },
-  status: { fontSize: 13, color: "#999", textTransform: "capitalize" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 8 },
-  location: { fontSize: 15, color: "#666", marginBottom: 4 },
+  badgeLost: { backgroundColor: "rgba(255, 77, 77, 0.2)", color: "#FF4D4D" },
+  badgeFound: { backgroundColor: "rgba(16, 185, 129, 0.2)", color: "#10B981" },
+  status: { fontSize: 13, color: "#94A3B8", textTransform: "uppercase", fontWeight: "700" },
+  title: { fontSize: 28, fontWeight: "900", marginBottom: 12, color: "#F8FAFC", letterSpacing: -0.5 },
+  location: { fontSize: 16, color: "#94A3B8", marginBottom: 6, fontWeight: "500" },
   category: {
     fontSize: 14,
-    color: "#666",
-    marginBottom: 12,
+    color: "#6366F1",
+    marginBottom: 16,
     textTransform: "capitalize",
+    fontWeight: "700",
   },
-  description: { fontSize: 15, lineHeight: 22, marginBottom: 16 },
-  postedBy: { fontSize: 13, color: "#999", marginBottom: 20 },
-  ownerActions: { flexDirection: "row", marginTop: 24, gap: 12 },
-  nonOwnerActions: { marginTop: 24 },
+  description: { fontSize: 16, lineHeight: 24, marginBottom: 24, color: "#F1F5F9" },
+  postedBy: { fontSize: 14, color: "#64748B", marginBottom: 32, fontWeight: "600" },
+  ownerActions: { flexDirection: "row", marginTop: 8, gap: 12 },
+  nonOwnerActions: { marginTop: 8 },
   resolveBtn: {
     flex: 1,
-    backgroundColor: "#16a34a",
-    padding: 14,
-    borderRadius: 8,
+    backgroundColor: "#10B981",
+    padding: 16,
+    borderRadius: 999,
     alignItems: "center",
   },
-  resolveBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  resolveBtnText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   editBtn: {
     flex: 1,
-    backgroundColor: "#2563eb",
-    padding: 14,
-    borderRadius: 8,
+    backgroundColor: "#1E293B",
+    padding: 16,
+    borderRadius: 999,
     alignItems: "center",
   },
-  editBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  editBtnText: { color: "#F8FAFC", fontWeight: "700", fontSize: 15 },
   deleteBtn: {
     flex: 1,
-    backgroundColor: "#dc2626",
-    padding: 14,
-    borderRadius: 8,
+    backgroundColor: "rgba(239, 68, 68, 0.2)",
+    padding: 16,
+    borderRadius: 999,
     alignItems: "center",
   },
-  deleteBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+  deleteBtnText: { color: "#EF4444", fontWeight: "700", fontSize: 15 },
   claimBtn: {
-    backgroundColor: "#2563eb",
-    padding: 16,
-    borderRadius: 8,
+    backgroundColor: "#6366F1",
+    padding: 18,
+    borderRadius: 999,
     alignItems: "center",
+    shadowColor: "#6366F1",
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
   },
-  claimBtnText: { color: "#fff", fontWeight: "600", fontSize: 16 },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "center",
-    padding: 16,
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 24,
-  },
-  modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 8 },
-  modalSubtitle: { fontSize: 14, color: "#666", marginBottom: 16 },
-  modalInput: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 12,
-    minHeight: 100,
-    textAlignVertical: "top",
-    marginBottom: 24,
-  },
-  modalButtons: { flexDirection: "row", gap: 12 },
-  modalBtn: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  modalCancelBtn: { backgroundColor: "#f3f4f6" },
-  modalCancelBtnText: { color: "#374151", fontWeight: "600" },
-  modalSubmitBtn: { backgroundColor: "#2563eb" },
-  modalSubmitBtnText: { color: "#fff", fontWeight: "600" },
+  claimBtnText: { color: "#fff", fontWeight: "800", fontSize: 16 },
 });
