@@ -1,50 +1,79 @@
-# Welcome to your Expo app 👋
+# FoundIt 🔍
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+FoundIt is a premium React Native mobile application built with Expo that helps university students and local communities report, track, and reclaim lost and found items. 
 
-## Get started
+Featuring a sleek dark-mode aesthetic, interactive location mapping, and real-time chat, FoundIt makes returning lost items faster and safer than ever.
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+- **Real-Time Feed:** Scroll through a live feed of recently lost or found items.
+- **Interactive Map Location Picker:** Drop a pin exactly where an item was found using `react-native-maps` and automatically convert the coordinates to a readable address via reverse geocoding.
+- **Direct Messaging:** Instantly chat with item owners using secure, real-time Firestore chat rooms.
+- **Instant Notifications:** Receive local push notifications the moment someone tries to claim your item.
+- **Photo Uploads:** Seamlessly take photos with your camera or select from your gallery to attach to your posts.
+- **Secure Authentication:** Full Firebase Authentication (Sign up, Log in, Change Password, Delete Account).
 
-2. Start the app
+## 🛠 Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+- **Framework:** React Native / Expo (SDK 54)
+- **Language:** TypeScript
+- **Navigation:** Expo Router (File-based navigation)
+- **Backend & Database:** Firebase (Auth, Firestore, Storage)
+- **Maps & Location:** `expo-location`, `react-native-maps`
+- **Media:** `expo-image-picker`
 
-In the output, you'll find options to open the app in a
+## 🚀 Prerequisites
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Before you begin, ensure you have the following installed:
+- [Node.js](https://nodejs.org/en/) (v18 or higher recommended)
+- [Git](https://git-scm.com/)
+- The **Expo Go** app installed on your physical iOS or Android device (optional, but recommended for testing).
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## ⚙️ Installation & Setup
 
-## Get a fresh project
-
-When you're ready, run:
-
+**1. Clone the repository**
 ```bash
-npm run reset-project
+git clone https://github.com/Sadeepa123L/founditapp.git
+cd founditapp
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+**2. Install dependencies**
+```bash
+npm install
+```
 
-## Learn more
+**3. Configure Firebase**
+To run this app on your own backend, you must create a project in the [Firebase Console](https://console.firebase.google.com/):
+1. Enable **Authentication** (Email/Password).
+2. Enable **Firestore Database** (Create test rules or production rules).
+3. Enable **Firebase Storage**.
+4. Register a Web App in your Firebase project to get your configuration keys.
+5. Open `src/services/firebase.ts` and replace the `firebaseConfig` object with your own credentials:
 
-To learn more about developing your project with Expo, look at the following resources:
+```typescript
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+};
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## 📱 Running the App
 
-## Join the community
+Start the Expo development server:
 
-Join our community of developers creating universal apps.
+```bash
+npm start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This will start the Metro Bundler and display a QR code in your terminal.
+
+- **To run on a physical device:** Open the Expo Go app on your phone and scan the QR code.
+- **To run on an Android Emulator:** Press `a` in the terminal.
+- **To run on an iOS Simulator (Mac only):** Press `i` in the terminal.
+
+## 🔒 Security Note
+*For production builds, ensure you update your Firestore and Storage security rules in the Firebase console to restrict database writes and storage uploads strictly to authenticated users!*
