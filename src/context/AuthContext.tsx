@@ -3,6 +3,8 @@ import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
     signOut,
+    updatePassword,
+    deleteUser,
     User,
 } from "firebase/auth";
 import React, {
@@ -20,6 +22,8 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUserPassword: (newPassword: string) => Promise<void>;
+  deleteUserAccount: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -48,8 +52,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await signOut(auth);
   };
 
+  const updateUserPassword = async (newPassword: string) => {
+    if (!auth.currentUser) throw new Error("No user logged in");
+    await updatePassword(auth.currentUser, newPassword);
+  };
+
+  const deleteUserAccount = async () => {
+    if (!auth.currentUser) throw new Error("No user logged in");
+    await deleteUser(auth.currentUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, updateUserPassword, deleteUserAccount }}>
       {children}
     </AuthContext.Provider>
   );
