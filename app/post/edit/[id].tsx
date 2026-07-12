@@ -30,7 +30,7 @@ const CATEGORIES: PostCategory[] = [
 export default function EditPostScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
-  
+
   const [loading, setLoading] = useState(true);
   const [type, setType] = useState<PostType>("lost");
   const [title, setTitle] = useState("");
@@ -39,7 +39,7 @@ export default function EditPostScreen() {
   const [location, setLocation] = useState("");
   const [existingPhotoUrl, setExistingPhotoUrl] = useState<string | null>(null);
   const [newPhotoUri, setNewPhotoUri] = useState<string | null>(null);
-  
+
   const [submitting, setSubmitting] = useState(false);
   const [fetchingLocation, setFetchingLocation] = useState(false);
 
@@ -50,7 +50,7 @@ export default function EditPostScreen() {
         const docSnap = await getDoc(doc(db, "posts", id));
         if (docSnap.exists()) {
           const postData = docSnap.data() as Post;
-          
+
           if (user?.uid !== postData.postedBy) {
             Alert.alert("Unauthorized", "You can only edit your own posts.");
             router.back();
@@ -130,14 +130,17 @@ export default function EditPostScreen() {
 
   const handleSubmit = async () => {
     if (!title || !description || !location) {
-      Alert.alert("Missing info", "Please fill in title, description, and location.");
+      Alert.alert(
+        "Missing info",
+        "Please fill in title, description, and location.",
+      );
       return;
     }
     if (!id) return;
 
     setSubmitting(true);
     try {
-      let updatedPhotoUrl = existingPhotoUrl;
+      let updatedPhotoUrl: string | undefined = existingPhotoUrl ?? undefined;
 
       if (newPhotoUri) {
         updatedPhotoUrl = await uploadPostPhoto(newPhotoUri, id);
@@ -171,7 +174,10 @@ export default function EditPostScreen() {
   const displayedPhoto = newPhotoUri || existingPhotoUrl;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ padding: 16 }}
+    >
       <Text style={styles.title}>Edit Post</Text>
 
       <View style={styles.toggleRow}>
@@ -179,15 +185,26 @@ export default function EditPostScreen() {
           style={[styles.toggleBtn, type === "lost" && styles.toggleActiveLost]}
           onPress={() => setType("lost")}
         >
-          <Text style={type === "lost" ? styles.toggleTextActive : styles.toggleText}>
+          <Text
+            style={
+              type === "lost" ? styles.toggleTextActive : styles.toggleText
+            }
+          >
             Lost
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.toggleBtn, type === "found" && styles.toggleActiveFound]}
+          style={[
+            styles.toggleBtn,
+            type === "found" && styles.toggleActiveFound,
+          ]}
           onPress={() => setType("found")}
         >
-          <Text style={type === "found" ? styles.toggleTextActive : styles.toggleText}>
+          <Text
+            style={
+              type === "found" ? styles.toggleTextActive : styles.toggleText
+            }
+          >
             Found
           </Text>
         </TouchableOpacity>
@@ -216,7 +233,9 @@ export default function EditPostScreen() {
             style={[styles.chip, category === c && styles.chipActive]}
             onPress={() => setCategory(c)}
           >
-            <Text style={category === c ? styles.chipTextActive : styles.chipText}>
+            <Text
+              style={category === c ? styles.chipTextActive : styles.chipText}
+            >
               {c}
             </Text>
           </TouchableOpacity>
@@ -263,10 +282,7 @@ export default function EditPostScreen() {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.cancelBtn}
-        onPress={() => router.back()}
-      >
+      <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
         <Text style={styles.cancelBtnText}>Cancel</Text>
       </TouchableOpacity>
     </ScrollView>
