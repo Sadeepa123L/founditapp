@@ -30,12 +30,12 @@ export async function requestNotificationPermissions() {
   return finalStatus === 'granted';
 }
 
-export async function scheduleClaimNotification(postTitle: string, claimerName: string) {
+export async function scheduleChatNotification(postTitle: string, claimerName: string) {
   await Notifications.scheduleNotificationAsync({
     content: {
       title: "New Claim Request! 🎉",
-      body: `${claimerName} has requested to claim your post: "${postTitle}". Check your Claims Inbox.`,
-      data: { type: 'claim_request' },
+      body: `${claimerName} has requested to claim your post: "${postTitle}". Check your Messages tab.`,
+      data: { type: 'chat_request' },
     },
     trigger: null,
   });
