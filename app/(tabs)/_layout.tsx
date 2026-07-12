@@ -6,13 +6,13 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#2563eb",
-        tabBarInactiveTintColor: "#6b7280",
+        tabBarActiveTintColor: "#6366F1", // Indigo
+        tabBarInactiveTintColor: "#64748B", // Slate
         headerShown: false,
         tabBarStyle: {
           borderTopWidth: 1,
-          borderTopColor: "#e5e7eb",
-          backgroundColor: "#ffffff",
+          borderTopColor: "#1E293B",
+          backgroundColor: "#0F172A",
           height: 60,
           paddingBottom: 8,
           paddingTop: 8,
@@ -29,6 +29,15 @@ export default function TabLayout() {
           title: "Home",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home" size={size || 24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: "Messages",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles" size={size || 24} color={color} />
           ),
         }}
       />
