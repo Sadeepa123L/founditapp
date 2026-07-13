@@ -9,7 +9,6 @@ interface PostCardProps {
 }
 
 export default function PostCard({ post, onPress }: PostCardProps) {
-  // Format date if it exists, else show a placeholder
   const formattedDate = post.createdAt
     ? new Date(post.createdAt).toLocaleDateString("en-US", {
         month: "short",

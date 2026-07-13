@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
@@ -12,7 +12,10 @@ import {
   View,
 } from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
-import { sendMessage, subscribeToRoomMessages } from "../../src/services/chatService";
+import {
+  sendMessage,
+  subscribeToRoomMessages,
+} from "../../src/services/chatService";
 import { ChatMessage } from "../../src/types/Chat";
 
 export default function ChatScreen() {
@@ -23,11 +26,11 @@ export default function ChatScreen() {
 
   useEffect(() => {
     if (!roomId) return;
-    
+
     const unsubscribe = subscribeToRoomMessages(
       roomId,
       (newMessages) => setMessages(newMessages),
-      (error) => console.error("Error fetching messages: ", error)
+      (error) => console.error("Error fetching messages: ", error),
     );
 
     return () => unsubscribe();
@@ -35,25 +38,34 @@ export default function ChatScreen() {
 
   const handleSend = async () => {
     if (!inputText.trim() || !user || !roomId) return;
-    
+
     const textToSend = inputText.trim();
-    setInputText(""); // Optimistically clear input
-    
+    setInputText("");
+
     try {
       await sendMessage(roomId, user.uid, user.email || "Unknown", textToSend);
     } catch (err) {
       console.error("Failed to send message", err);
-      // Could show an alert here
     }
   };
 
   const renderMessage = ({ item }: { item: ChatMessage }) => {
     const isMe = item.senderId === user?.uid;
-    
+
     return (
-      <View style={[styles.messageBubble, isMe ? styles.myBubble : styles.theirBubble]}>
+      <View
+        style={[
+          styles.messageBubble,
+          isMe ? styles.myBubble : styles.theirBubble,
+        ]}
+      >
         {!isMe && <Text style={styles.senderEmail}>{item.senderEmail}</Text>}
-        <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.theirMessageText]}>
+        <Text
+          style={[
+            styles.messageText,
+            isMe ? styles.myMessageText : styles.theirMessageText,
+          ]}
+        >
           {item.text}
         </Text>
       </View>
@@ -61,8 +73,8 @@ export default function ChatScreen() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
+    <KeyboardAvoidingView
+      style={styles.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <View style={styles.header}>
@@ -76,7 +88,7 @@ export default function ChatScreen() {
         data={messages}
         keyExtractor={(item) => item.id}
         renderItem={renderMessage}
-        inverted // Messages are ordered descending, inverted makes bottom-to-top
+        inverted
         contentContainerStyle={styles.listContent}
       />
 
@@ -89,7 +101,7 @@ export default function ChatScreen() {
           onChangeText={setInputText}
           multiline
         />
-        <TouchableOpacity 
+        <TouchableOpacity
           style={[styles.sendBtn, !inputText.trim() && styles.sendBtnDisabled]}
           onPress={handleSend}
           disabled={!inputText.trim()}
